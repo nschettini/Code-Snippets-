@@ -1,0 +1,13 @@
+#Creates bar table with count of total # of studies
+#
+
+ggplot(testdata, aes(x = testdata$CASE_TYPE)) + 
+  geom_bar(aes(fill = testdata$CASE_TYPE)) +
+  xlab("Proc Type") +
+  ylab("Count") +
+  ggtitle("Test Data") +
+  labs(fill ="Case type") +
+  theme_dark() +
+  geom_text(stat = "count", aes(label = ..count.., y = ..count..), vjust=-0.5)
+  
+  count(testdata, 'CASE_TYPE') 
