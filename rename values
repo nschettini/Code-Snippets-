@@ -1,0 +1,3 @@
+mushroom_df1 <- mushroom_df %>% 
+  mutate(`gill-size`=case_when(`gill-size`=='b'~'broad',
+                                             `gill-size`=='n'~'narrow'))
