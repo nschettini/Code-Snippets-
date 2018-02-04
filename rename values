@@ -1,3 +1,20 @@
+
 mushroom_df1 <- mushroom_df %>% 
   mutate(`gill-size`=case_when(`gill-size`=='b'~'broad',
                                              `gill-size`=='n'~'narrow'))
+
+
+#Another way to rename:
+levels(mushroom_data$`gill-size`) <- list(broad="b", narrow="n")
+
+
+#Another way:
+i <- 1
+for (x in mushroom_df$`gill-size`){
+  if (x == 'b'){
+    mushroom_df$`gill-size`[i] <- "broad"
+  }else if (x == 'n'){
+    mushroom_df$`gill-size`[i] <- "narrow"
+  }
+  i <- i + 1
+}
