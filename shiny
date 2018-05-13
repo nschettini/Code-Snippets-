@@ -30,10 +30,10 @@ shinyApp(
 
   
   server = function(input, output) {
-    setup_twitter_oauth(consumer_key = "qf9p78TDvxHDOwoAZMoEZABQm",
-                        consumer_secret = "6dn3elaJhqj6NhnxcjUy6k9zOxbdj0ynAf5KQua6OKHLSysPmg",
-                        access_token = "970745798-gxz3FUuhCy94KPCRPtdA6GRhqJUCjbbywRKVFZRy",
-                        access_secret = "GrwHmZiSTGcl9unIbI1m3SVPXjXUrsVMhTzGhnjvjWbm9")
+    setup_twitter_oauth(consumer_key = "x",
+                        consumer_secret = "x",
+                        access_token = "x-x",
+                        access_secret = "x")
     
     # Issue search query to Twitter
     dataInput <- reactive({  
