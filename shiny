@@ -1,0 +1,93 @@
+library(leaflet)
+library(twitteR)
+library(syuzhet)
+library(knitr)
+library(shinythemes)
+library(rsconnect)
+library(kableExtra)
+library(tm)
+library(leaflet.extras)
+
+
+shinyApp(
+  ui = fluidPage(theme = shinytheme("slate"),
+    titlePanel("CUNY MSDS - Twitter Analysis"),
+    headerPanel(h5("Search Examples: TotalTrafficNYC,  nyc,  visionzeronyc ...")),
+    fluidRow(
+      column(4, textInput("searchkw", label = "search:", value = "nycvisionzero  OR visionzero OR visionzeroNYC")),
+      column(4, textInput("lat", label = "latitude:", value = 40.579021)),
+      column(4, textInput("long", label = "longitude:", value = -74.151535)),
+      column(8, leafletOutput("myMap")),
+      column(14, tableOutput('Sentiment_Analysis'), width = 4),
+      column(16, tableOutput('table'), width = 12)
+      
+    ),
+    mainPanel(h4("Sentiment Analysis searches the last 150 tweets from Twitter, using the syuzhet function to determine if the tweets are positive, negative, or neutral. \n"),
+              h5("Shinyapp for nschettini final project"))
+  ),
+  
+
+
+  
+  server = function(input, output) {
+    setup_twitter_oauth(consumer_key = "qf9p78TDvxHDOwoAZMoEZABQm",
+                        consumer_secret = "6dn3elaJhqj6NhnxcjUy6k9zOxbdj0ynAf5KQua6OKHLSysPmg",
+                        access_token = "970745798-gxz3FUuhCy94KPCRPtdA6GRhqJUCjbbywRKVFZRy",
+                        access_secret = "GrwHmZiSTGcl9unIbI1m3SVPXjXUrsVMhTzGhnjvjWbm9")
+    
+    # Issue search query to Twitter
+    dataInput <- reactive({  
+      tweets <- twListToDF(searchTwitter(input$searchkw, n = 200, 
+                                         geocode = paste0(input$lat, ",", input$long, ",40mi"))) 
+      tweets$created <- as.character(tweets$created)
+      tweets <- tweets[!is.na(tweets[, "longitude"]), ]
+      
+    })
+    
+    
+   
+    # sent
+    dataInput1 <- reactive({  
+      tweets <- twListToDF(searchTwitter(input$searchkw, n = 200, 
+                                         geocode = paste0(input$lat, ",", input$long, ",40mi"))) 
+      tweets$created <- as.character(tweets$created)
+      
+      tweets <- gsub("http.*","",tweets$text)
+      tweets <- gsub("https.*","",tweets)
+      tweets <- gsub("#.*","",tweets)
+      tweets <- gsub("@.*","",tweets)
+      tweets <- gsub("[^\x01-\x7F]", "", tweets)
+      #word.df <- as.vector(tweets)
+      emotion.df <- get_nrc_sentiment(tweets)
+      emotion.df2 <- cbind(tweets, emotion.df)
+      sent.value <- get_sentiment(tweets)
+      Sentiment_Analysis <- ifelse(sent.value < 0, "Negative", ifelse(sent.value > 0, "Positive", "Neutral"))
+      kable(table(Sentiment_Analysis), "html", escape = F) %>%
+        kable_styling("striped", full_width = T, font_size = 20) %>%
+        row_spec(0, bold = T, color = "grey", background = "#e5ffcc")
+    })
+    output$Sentiment_Analysis = renderText(dataInput1())
+    
+    
+    
+    # Create a reactive leaflet map
+    mapTweets <- reactive({
+      map = leaflet(na.omit) %>% 
+        addTiles() %>%
+        addPulseMarkers(as.numeric(dataInput()$longitude), as.numeric(dataInput()$latitude), popup = dataInput()$text,
+                        icon = makePulseIcon(heartbeat = 0.5)) %>%
+        setView(input$long, input$lat, zoom = 11)
+    })
+    output$myMap = renderLeaflet(mapTweets())
+    
+    
+ 
+    # Create a reactive table 
+    output$table <- renderTable(striped = T, bordered = T,
+      dataInput()[, c("text", "screenName", "favorited", "retweetCount", "created", "longitude", "latitude")]
+    )
+  }
+  
+)
+  
+  
