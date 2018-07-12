@@ -1,0 +1,12 @@
+# Rank points of high leverage
+library(broom)
+mod %>%
+  augment() %>%
+  arrange(desc(.hat)) %>%
+  head()
+  
+  # Rank influential points
+mod %>%
+augment() %>%
+arrange(desc(.cooksd)) %>%
+head()
