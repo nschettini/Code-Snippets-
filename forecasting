@@ -1,3 +1,8 @@
+Automatic forecasting with exponential smoothing
+The namesake function for finding errors, trend, and seasonality (ETS) provides a completely 
+automatic way of producing forecasts for a wide range of time series.
+
+data %>% ets() %>% foreast() %>% autoplot()
 
 simple exponential smoothing
 # Use ses() to forecast the next 10 years of winning times
