@@ -1,0 +1,7 @@
+library(MASS)
+
+```{r}
+MultModel <- stepAIC(lm(mpg ~ . ,data=vehicles), direction = 'both', trace = FALSE)
+MultModel$anova[1:5]
+summary(MultModel)
+```
