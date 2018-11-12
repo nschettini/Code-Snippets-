@@ -16,3 +16,20 @@ autoplot(fc)
 
 # Add the one-step forecasts for the training data to the plot
 autoplot(fc) + autolayer(fitted(fc))
+
+
+=-=
+
+# Create a training set using subset()
+train <- subset(marathon, end = length(marathon) - 20)
+
+# Compute SES and naive forecasts, save to fcses and fcnaive
+fcses <- ses(train, h = 20)
+fcnaive <- naive(train, h = 20)
+
+# Calculate forecast accuracy measures
+accuracy(fcses, marathon)
+accuracy(fcnaive, marathon)
+
+# Save the best forecasts as fcbest
+fcbest <- fcnaive
