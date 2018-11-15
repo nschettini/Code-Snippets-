@@ -1,0 +1,16 @@
+```{r}
+smp_size <- floor(0.75 * nrow(insurance))
+set.seed(123)
+train_ind <- sample(seq_len(nrow(insurance)), size = smp_size)
+
+train <- insurance[train_ind, ]
+test <- insurance[-train_ind, ]
+```
+
+
+```{R}
+set.seed(101) 
+sample = sample.split(insurance$charges, SplitRatio = .98)
+train = subset(insurance, sample == TRUE)
+test  = subset(insurance, sample == FALSE)
+```
